@@ -1,0 +1,1 @@
+Cada vez que se añadan registros en adalo, hay que modificar el archivo json para añadir los mismos
