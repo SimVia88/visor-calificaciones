@@ -2,67 +2,89 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Visor de Valoraciones</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Indicadores de Valoración</title>
   <style>
     body {
+      background: #f4f7fa;
       font-family: Arial, sans-serif;
-      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
-      padding: 2em;
-      color: #333;
+      min-height: 100vh;
     }
+
+    .contenedor {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
     .tarjeta {
       background: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      padding: 1.5em 2em;
-      margin: 1em;
-      min-width: 250px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      padding: 20px 25px;
+      width: 230px;
       text-align: center;
     }
-    .tarjeta h2 {
-      margin: 0.2em 0;
+
+    .titulo {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #333;
     }
-    .positivo { color: #4CAF50; }
-    .negativo { color: #F44336; }
-    .neutro { color: #333; }
+
+    .valor {
+      font-size: 32px;
+      font-weight: bold;
+    }
+
+    .verde { color: #4CAF50; }
+    .rojo { color: #F44336; }
+    .negro { color: #333; }
   </style>
 </head>
 <body>
-  <h1>Indicadores de Valoración</h1>
-  <div class="tarjeta" id="total"><h3>Número de registros</h3><h2>0</h2></div>
-  <div class="tarjeta positivo" id="positivas"><h3>Valoraciones positivas</h3><h2>0</h2></div>
-  <div class="tarjeta negativo" id="negativas"><h3>Valoraciones negativas</h3><h2>0</h2></div>
-  <div class="tarjeta" id="porcentaje"><h3>Resultado de la satisfacción</h3><h2>0%</h2></div>
+  <div class="contenedor">
+    <div class="tarjeta">
+      <div class="titulo">Número de registros</div>
+      <div class="valor" id="total"></div>
+    </div>
+    <div class="tarjeta">
+      <div class="titulo">Valoraciones positivas</div>
+      <div class="valor verde" id="positivas"></div>
+    </div>
+    <div class="tarjeta">
+      <div class="titulo">Valoraciones negativas</div>
+      <div class="valor rojo" id="negativas"></div>
+    </div>
+    <div class="tarjeta">
+      <div class="titulo">Resultado de la satisfacción</div>
+      <div class="valor" id="porcentaje"></div>
+    </div>
+  </div>
 
   <script>
-    fetch('valoraciones.json')
-      .then(response => response.json())
+    fetch("valoraciones.json")
+      .then(res => res.json())
       .then(data => {
         const total = data.length;
-        const positivas = data.filter(d => d.calificacion.toLowerCase() === "positiva").length;
-        const negativas = data.filter(d => d.calificacion.toLowerCase() === "negativa").length;
+        const positivas = data.filter(d => d.calificacion === "positiva").length;
+        const negativas = data.filter(d => d.calificacion === "negativa").length;
         const porcentaje = total > 0 ? (positivas / total * 100).toFixed(2) : 0;
 
-        document.querySelector('#total h2').textContent = total;
-        document.querySelector('#positivas h2').textContent = positivas;
-        document.querySelector('#negativas h2').textContent = negativas;
+        document.getElementById("total").textContent = total;
+        document.getElementById("positivas").textContent = positivas;
+        document.getElementById("negativas").textContent = negativas;
 
-        const porcentajeElem = document.querySelector('#porcentaje h2');
-        porcentajeElem.textContent = porcentaje + "%";
-        if (porcentaje > 50) {
-          porcentajeElem.className = "positivo";
-        } else if (porcentaje < 50) {
-          porcentajeElem.className = "negativo";
-        } else {
-          porcentajeElem.className = "neutro";
-        }
-      })
-      .catch(error => {
-        console.error("Error al cargar valoraciones.json", error);
+        const porcentajeEl = document.getElementById("porcentaje");
+        porcentajeEl.textContent = porcentaje + "%";
+        porcentajeEl.className = "valor " + (porcentaje > 50 ? "verde" : porcentaje < 50 ? "rojo" : "negro");
       });
   </script>
 </body>
