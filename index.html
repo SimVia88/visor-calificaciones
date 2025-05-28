@@ -5,15 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Indicadores de Valoración</title>
   <style>
-    body {
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
       background: transparent;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 20px;
+      overflow: hidden; /* 🔑 esto elimina la barra de scroll */
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
     }
 
     .contenedor {
@@ -21,6 +23,8 @@
       gap: 25px;
       flex-wrap: wrap;
       justify-content: center;
+      align-items: center;
+      max-width: 100%;
     }
 
     .tarjeta {
@@ -54,7 +58,7 @@
     }
 
     .valor {
-      font-size: 36px;
+      font-size: min(10vw, 36px);
       font-weight: bold;
       transition: color 0.4s ease;
     }
