@@ -1,14 +1,6 @@
 [
-  {
-    "calificacion": "positiva"
-  },
-  {
-    "calificacion": "positiva"
-  },
-  {
-    "calificacion": "positiva"
-  },
-  {
-    "calificacion": "positiva"
-  }
+  { "puntuacion": 5 },
+  { "puntuacion": 4 },
+  { "puntuacion": 5 },
+  { "puntuacion": 3 }
 ]

@@ -3,124 +3,135 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Indicadores de Valoración</title>
+  <title>Visor de Satisfacción</title>
   <style>
-    html, body {
+    body {
       margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      background: transparent;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      overflow: hidden; /* 🔑 esto elimina la barra de scroll */
+      background-color: transparent;
       display: flex;
       justify-content: center;
       align-items: center;
+      height: 100vh;
     }
 
     .contenedor {
       display: flex;
-      gap: 25px;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      max-width: 90vw;
+    }
+
+    .indicadores {
+      display: flex;
+      gap: 20px;
       flex-wrap: wrap;
       justify-content: center;
-      align-items: center;
-      max-width: 100%;
     }
 
     .tarjeta {
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-      padding: 20px 30px;
-      width: 240px;
+      background: #f9f9f9;
+      border-radius: 12px;
+      padding: 20px;
+      width: 200px;
       text-align: center;
-      opacity: 0;
-      transform: translateY(20px);
-      animation: aparecer 0.6s ease forwards;
-    }
-
-    .tarjeta:nth-child(2) { animation-delay: 0.1s; }
-    .tarjeta:nth-child(3) { animation-delay: 0.2s; }
-    .tarjeta:nth-child(4) { animation-delay: 0.3s; }
-
-    @keyframes aparecer {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
     .titulo {
-      font-size: 15px;
-      font-weight: bold;
-      margin-bottom: 8px;
-      color: #444;
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 6px;
     }
 
     .valor {
-      font-size: min(10vw, 36px);
+      font-size: 32px;
       font-weight: bold;
-      transition: color 0.4s ease;
     }
 
     .verde { color: #4CAF50; }
     .rojo { color: #F44336; }
-    .negro { color: #333; }
+    .gris { color: #999; }
+
+    .estrellas {
+      font-size: 40px;
+      letter-spacing: 4px;
+      color: #FFD700;
+    }
   </style>
 </head>
 <body>
   <div class="contenedor">
-    <div class="tarjeta">
-      <div class="titulo">Número de registros</div>
-      <div class="valor" id="total">0</div>
+    <div class="indicadores">
+      <div class="tarjeta">
+        <div class="titulo">Nº de registros</div>
+        <div class="valor" id="total">0</div>
+      </div>
+      <div class="tarjeta">
+        <div class="titulo">Valoraciones positivas</div>
+        <div class="valor verde" id="positivas">0</div>
+      </div>
+      <div class="tarjeta">
+        <div class="titulo">Valoraciones neutras</div>
+        <div class="valor gris" id="neutras">0</div>
+      </div>
+      <div class="tarjeta">
+        <div class="titulo">Valoraciones negativas</div>
+        <div class="valor rojo" id="negativas">0</div>
+      </div>
     </div>
     <div class="tarjeta">
-      <div class="titulo">Valoraciones positivas</div>
-      <div class="valor verde" id="positivas">0</div>
-    </div>
-    <div class="tarjeta">
-      <div class="titulo">Valoraciones negativas</div>
-      <div class="valor rojo" id="negativas">0</div>
-    </div>
-    <div class="tarjeta">
-      <div class="titulo">Resultado de la satisfacción</div>
-      <div class="valor" id="porcentaje">0%</div>
+      <div class="titulo">Media de Satisfacción</div>
+      <div class="valor" id="media">0.0</div>
+      <div class="estrellas" id="estrellas">☆☆☆☆☆</div>
     </div>
   </div>
 
   <script>
-    function animarNumero(el, target, simbolo = "", color = "", delay = 10) {
+    // Función para animar números
+    function animarNumero(elemento, valorFinal, decimales = 0, delay = 15) {
       let valor = 0;
-      const incremento = target / 60;
+      const incremento = valorFinal / 60;
       const animacion = setInterval(() => {
         valor += incremento;
-        if (valor >= target) {
-          valor = target;
+        if (valor >= valorFinal) {
+          valor = valorFinal;
           clearInterval(animacion);
         }
-        el.textContent = Math.round(valor) + simbolo;
-        if (color) el.className = "valor " + color;
+        elemento.textContent = valor.toFixed(decimales);
       }, delay);
     }
 
+    // Cargar JSON desde archivo externo (valoraciones.json)
     fetch("valoraciones.json")
       .then(res => res.json())
-      .then(data => {
-        const total = data.length;
-        const positivas = data.filter(d => d.calificacion === "positiva").length;
-        const negativas = data.filter(d => d.calificacion === "negativa").length;
-        const porcentaje = total > 0 ? (positivas / total * 100).toFixed(0) : 0;
+      .then(registros => {
+        const total = registros.length;
+        const positivas = registros.filter(r => r.puntuacion > 3).length;
+        const neutras = registros.filter(r => r.puntuacion === 3).length;
+        const negativas = registros.filter(r => r.puntuacion < 3).length;
+        const suma = registros.reduce((acc, r) => acc + r.puntuacion, 0);
+        const media = total > 0 ? (suma / total) : 0;
+
+        // Estrellas dinámicas
+        function renderEstrellas(valor) {
+          const llenas = Math.floor(valor);
+          const decimal = valor - llenas;
+          const mediaEstrella = decimal >= 0.75 ? '★' : decimal >= 0.25 ? '⯪' : '';
+          return '★'.repeat(llenas) + mediaEstrella + '☆'.repeat(5 - llenas - (mediaEstrella ? 1 : 0));
+        }
 
         animarNumero(document.getElementById("total"), total);
         animarNumero(document.getElementById("positivas"), positivas);
+        animarNumero(document.getElementById("neutras"), neutras);
         animarNumero(document.getElementById("negativas"), negativas);
-
-        const porcentajeEl = document.getElementById("porcentaje");
-        const color =
-          porcentaje > 50 ? "verde" :
-          porcentaje < 50 ? "rojo" : "negro";
-
-        animarNumero(porcentajeEl, porcentaje, "%", color);
+        animarNumero(document.getElementById("media"), media, 1);
+        document.getElementById("estrellas").textContent = renderEstrellas(media);
       });
   </script>
 </body>
