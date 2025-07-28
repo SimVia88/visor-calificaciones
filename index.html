@@ -13,7 +13,7 @@
       overflow: hidden;
     }
 
-    
+
     .contenedor {
       display: flex;
       flex-direction: column;
@@ -108,10 +108,10 @@
       .then(res => res.json())
       .then(data => {
         const total = data.length;
-        const positivas = data.filter(r => r.nota > 3).length;
-        const neutras = data.filter(r => r.nota === 3).length;
-        const negativas = data.filter(r => r.nota < 3).length;
-        const suma = data.reduce((acc, r) => acc + r.nota, 0);
+        const positivas = data.filter(r => r.puntuacion > 3).length;
+        const neutras = data.filter(r => r.puntuacion === 3).length;
+        const negativas = data.filter(r => r.puntuacion < 3).length;
+        const suma = data.reduce((acc, r) => acc + r.puntuacion, 0);
         const media = total > 0 ? (suma / total) : 0;
 
         animarNumero(document.getElementById("total"), total);
