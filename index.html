@@ -55,7 +55,7 @@
 
     .verde { color: #4CAF50; }
     .rojo { color: #F44336; }
-    .gris { color: #999; }
+    .gris { color: #ebbc47; }
 
     .estrellas {
       font-size: 40px;
@@ -112,9 +112,9 @@
       .then(res => res.json())
       .then(registros => {
         const total = registros.length;
-        const positivas = registros.filter(r => r.puntuacion > 2).length;
-        const neutras = registros.filter(r => r.puntuacion === 2).length;
-        const negativas = registros.filter(r => r.puntuacion < 2).length;
+        const positivas = registros.filter(r => r.puntuacion > 3).length;
+        const neutras = registros.filter(r => r.puntuacion === 3).length;
+        const negativas = registros.filter(r => r.puntuacion < 3).length;
         const suma = registros.reduce((acc, r) => acc + r.puntuacion, 0);
         const media = total > 0 ? (suma / total) : 0;
 
